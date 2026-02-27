@@ -13,7 +13,8 @@ struct Film initializare(int _id, int _durata, const char* _nume, float _buget, 
 	s.id = _id;
 	s.buget = _buget;
 	s.durata = _durata;
-	s.nume = _nume;
+	s.nume = malloc(strlen(_nume) + 1);
+	strcpy(s.nume, _nume);
 	s.varstaMinima = _varstaMinima;
 
 	//initializare structura 
@@ -59,7 +60,7 @@ void dezalocare(struct Film** vector, int* nrElemente) {
 	for (int i = 0;i < *(nrElemente); i++) {
 		free((*vector)[i].nume);
 	}
-	free(vector);
+	free(*vector);
 	*vector = NULL;
 	*nrElemente = 0;
 }
@@ -68,7 +69,7 @@ void copiazaAnumiteElemente(struct Film* vector, char nrElemente, float bugetMax
 	//parametrul prag poate fi modificat in functie de 
 	// tipul atributului ales pentru a indeplini o conditie
 	//este creat un nou vector cu elementele care indeplinesc acea conditie
-	dimensiune = 0;
+	*dimensiune = 0;
 	for (int i = 0; i < nrElemente;i++)
 	{
 		if (vector[i].buget < bugetMaxim);
@@ -80,7 +81,7 @@ void copiazaAnumiteElemente(struct Film* vector, char nrElemente, float bugetMax
 	{
 		if (vector[k].buget < bugetMaxim)
 		{
-		(*vectorNou[k] = copyFilm(vector[i]));/////////
+		((*vectorNou)[k] = copyFilm(vector[i]));/////////
 		k++;
 		}
 	}
@@ -94,7 +95,7 @@ struct Film getPrimulElementConditionat(struct Film* vector, int nrElemente, con
 	s.nume = NULL;
 	for (int i = 0; i < nrElemente; i++)
 	{
-		if (strcmp(vector[i].nume, numeCautat));
+		if (strcmp(vector[i].nume, numeCautat))
 		return vector[i];
 	}
 	return s;
@@ -105,28 +106,27 @@ int main()
 {
 	struct Film f1 = initializare(1, 120, "Dune", 20.6, 14);
 	//afisare(f1);
-
 	int nrFilme = 3;
 	struct Film* filme = malloc(nrFilme * sizeof(struct Film));
 	filme[0] = f1;
 	*(filme + 1) = initializare(2, 360, "James Bond", 16, 12);//var fara index [], cu deferentiere
 	filme[2] = initializare(3, 240, "Star Wars", 50.6, 12);
-
 	afisareVector(filme, nrFilme);
+	
 	int nrFilmeCopiate = 2;
 	struct Film* vectorNou;
 	vectorNou = copiazaPrimeleNElemente(filme, nrFilme, nrFilmeCopiate);
 	printf("filme copiate: \n");
-	afisareVector(filme, nrFilme);
-
+	afisareVector(filme, nrFilmeCopiate);
 	dezalocare(&vectorNou, &nrFilmeCopiate);
 
-	struct Film* vectorIeftin=0;
+	struct Film* vectorIeftin=NULL;
 	float prag = 70;
 	int dimIeftin=0;
-	copiazaAnumiteElemente(filme, nrFilme, prag, vectorIeftin, &dimIeftin);
+
+	copiazaAnumiteElemente(filme, nrFilme, prag, &vectorIeftin, &dimIeftin);
 	afisareVector(vectorIeftin, dimIeftin);
 	afisare(getPrimulElementConditionat(filme, nrFilme, "Dune"));
-	//dezalocare(&filme, &nrFilme);
+	dezalocare(&filme, &nrFilme);
 	return 0;
 }
