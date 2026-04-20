@@ -1,0 +1,59 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+struct Carte {
+	int id;
+	int nr_pagini ;
+	char* titlu;
+	float pret;
+	char disponibil;
+};
+
+struct Carte initializare(int _id, int _nrPagini, const char* _titlu,float _pret, char _disponibil) {
+	struct Carte c;
+	c.id = _id;
+	c.nr_pagini = _nrPagini;
+	c.titlu = malloc(strlen(_titlu) + 1);
+	strcpy(c.titlu, _titlu);
+	c.pret = _pret;
+	c.disponibil = _disponibil;
+	return c;
+}
+
+void afisare(struct Carte c) {
+	printf("Id: %d\n", c.id);
+	printf("Nr pagini: %d\n", c.nr_pagini);
+	printf("Titlu: %s\n",c.titlu);
+	printf("Pret: %.2f\n", c.pret);
+	printf("Disponibil: %c\n", c.disponibil);
+
+}
+
+void modifica_titlu(struct Carte* c,char* titlu_nou) //* la Carte c pt ca modific originalul
+{
+	free((*c).titlu);
+	(*c).titlu = malloc(strlen(titlu_nou) + 1);
+	strcpy((*c).titlu, titlu_nou);
+}
+
+float calcPretPerPagina(struct Carte c, float pret, int nr_pagini)
+{
+	return c.pret/c.nr_pagini;
+}
+void dezalocare(struct Carte *c) 
+{
+	free((*c).titlu);
+}
+
+int main() {
+	struct Carte c1;
+	c1 = initializare(1, 768, "Momo", 18.98, 'D');
+	afisare(c1);
+
+	modifica_titlu(&c1, "Momo_ ed noua");
+
+	float pretPerPg = calcPretPerPagina(c1, c1.pret, c1.nr_pagini);
+	printf("pret per pg: %.2f", pretPerPg);
+
+	return 0;
+}
