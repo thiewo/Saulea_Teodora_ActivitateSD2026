@@ -1,0 +1,75 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+
+struct Joc {
+	int id;
+	int nr_jucatori ;
+	char* denumire ;
+	float pret ;
+	char rating ; //atributele noastre
+};
+
+struct Joc initializare(int _id, int _nr_jucatori, char* _denumire, float _pret, char _rating) {
+	struct Joc j;
+		j.id = 1;
+		j.nr_jucatori = _nr_jucatori;
+		j.denumire = malloc(sizeof(char)*(strlen(_denumire)+1));
+		strcpy(j.denumire, _denumire);
+		j.pret = _pret;
+		j.rating = _rating; 
+	return j;
+}
+
+void afisare(struct Joc j) {
+	printf("Id: %d\n", j.id);
+	printf("Denumire joc: %s\n", j.denumire);
+	printf("Numar minim de jucatori: %d\n", j.nr_jucatori);
+	printf("Rating: %c\n", j.rating);
+	printf("Pret: %5.2f\n", j.pret);
+
+}
+
+void modifica_denumire(struct Joc *j, char* _den) {
+	//modificarea unui atribut
+	free((*j).denumire);
+	(*j).denumire = malloc((strlen(_den) + 1) * sizeof(char));
+	strcpy((*j).denumire, _den);
+
+}
+int calcPretIndiv(struct Joc j){
+	float pr;
+	pr = j.pret / j.nr_jucatori;
+}
+
+void dezalocare(struct Joc *j) {
+	//dezalocare campuri alocate dinamic <=> ca sa nu avem memory leak
+	free((*j).denumire);//f9 pt breakpoint
+}
+
+int main() {
+	struct Joc j1;
+	j1 = initializare(1, 2, "Monopoly", 120, 'A');//'a'-pt caracter (ocupa 1 octet) si "a"-sir de caractere care are si \0 (ocupa 2 octeti)
+	afisare(j1);
+	printf("\n");
+	modifica_denumire(&j1, "Secret H");
+	afisare(j1);
+	int pret;
+	pret = calcPretIndiv(j1);
+	printf("%d", pret);
+	
+	int nrJocuri = 3;
+	struct Joc* jocuri = malloc(sizeof(struct Joc) * nrJocuri);
+	jocuri[0] = j1;
+	jocuri[1] = initializare(2, 3, "Catan", 60, 'A');
+	jocuri[2] = initializare(2, 2, "Nu te supara frate", 50, 'B');
+	afisare(*(jocuri + 1));
+	dezalocare(&j1);//referinta pt adresa lui denumire
+	return 0;
+}
+
+//obs:upper camer case se foloseste in general pt clase
+//cauta ce face breakpoint
+
+//-> dereferentiere si accesare
+//[] deplasare + dereferentiere    //sa am grija sa nu fac dubla dereferentiere
