@@ -1,0 +1,96 @@
+#include <stdio.h>
+#include <malloc.h>
+
+struct Telefon
+{
+	int id;
+	int autonomie;
+	char* model;
+	float pret;
+	char generatieRetea;
+};
+
+struct Telefon initializare( int _id, int _autonomie, const char* _model, float _pret, char _generatieRetea)
+{
+	struct Telefon t;
+	t.id = _id;
+	t.autonomie = _autonomie;
+	t.model = malloc(strlen(_model) + 1);
+	strcpy(t.model, _model);
+	t.pret = _pret;
+	t.generatieRetea = _generatieRetea;
+	return t;
+}
+
+struct Telefon copyTelefon(struct Telefon t)
+{
+	return initializare(t.id, t.autonomie, t.model, t.pret, t.generatieRetea);
+}
+
+void afisare(struct Telefon t)
+{
+	printf("Id: %d\n", t.id);
+	printf("Autonomie: %d\n", t.autonomie);
+	printf("Model: %s\n", t.model);
+	printf("Pret: %.2f\n", t.pret);
+	printf("Retea: %s\n", t.generatieRetea);
+}
+
+void afisareVector(struct Telefon* v, int n)
+{
+	for (int i = 0;i < n;i++)
+	{
+		afisare(v[i]);
+	}
+}
+
+struct Telefon* copiazaPrimeleNElemente(struct Telefon* v, int n, int nrCopiate)
+{
+	struct Telefon* v = malloc(sizeof(struct Telefon) * nrCopiate);
+	for (int i = 0; i < nrCopiate;i++) {
+		v[i] = copyTelefon(v[i]);
+	}
+	return v;
+}
+
+void copiazaTelefoaneCuPretMaxim(struct Telefon* v, int n, float pretMaxim,struct Telefon** vNou, int* dim) {
+	*dim = 0;
+	for (int i = 0; i < n; i++) {
+		if (v[i].pret < pretMaxim)
+			(*dim)++;   
+	}
+
+	*vNou = malloc((*dim) * sizeof(struct Telefon));
+
+	int k = 0;
+	for (int i = 0; i < n; i++) {
+		if (v[i].pret < pretMaxim) {
+			(*vNou)[k] = copyTelefon(v[i]);  
+			k++;
+		}
+	}
+}
+
+
+void dezalocare(struct Telefon** v, int* n)
+{
+	for (int i = 0;i < *(n); i++) {
+		free((*v)[i].model);
+	}
+	free(*v);
+	*v = NULL;
+	*n = 0;
+}
+
+int main() 
+{
+	int nrTelefoane = 4;
+	struct Telefon* telefon = malloc(sizeof(struct Telefon) * nrTelefoane);
+	telefon[0] = initializare(1, 360, "Galaxy 10", 1440.78, '4');
+	telefon[1] = initializare(2, 400, "Apple 8", 1365.77, '5');
+	telefon[2] = initializare(3, 290, "Xiaomi", 100.69, '4');
+	struct Telefon* ieftine = NULL;
+	int dimIeftine = 0;
+	copiazaTelefoaneCuPretMaxim(telefon, nrTelefoane, 3000.0, &ieftine, &dimIeftine);
+	return 0;
+}
