@@ -1,31 +1,179 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.37012.4 d17.14
-MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SEM04_SD", "SEM04_SD\SEM04_SD.vcxproj", "{2D175426-207F-4C63-BCF7-90A9EE20D4DC}"
-EndProject
-Global
-	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|x64 = Debug|x64
-		Debug|x86 = Debug|x86
-		Release|x64 = Release|x64
-		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2D175426-207F-4C63-BCF7-90A9EE20D4DC}.Debug|x64.ActiveCfg = Debug|x64
-		{2D175426-207F-4C63-BCF7-90A9EE20D4DC}.Debug|x64.Build.0 = Debug|x64
-		{2D175426-207F-4C63-BCF7-90A9EE20D4DC}.Debug|x86.ActiveCfg = Debug|Win32
-		{2D175426-207F-4C63-BCF7-90A9EE20D4DC}.Debug|x86.Build.0 = Debug|Win32
-		{2D175426-207F-4C63-BCF7-90A9EE20D4DC}.Release|x64.ActiveCfg = Release|x64
-		{2D175426-207F-4C63-BCF7-90A9EE20D4DC}.Release|x64.Build.0 = Release|x64
-		{2D175426-207F-4C63-BCF7-90A9EE20D4DC}.Release|x86.ActiveCfg = Release|Win32
-		{2D175426-207F-4C63-BCF7-90A9EE20D4DC}.Release|x86.Build.0 = Release|Win32
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {C3CACF52-F221-4DF3-A639-193BB4F27072}
-	EndGlobalSection
-EndGlobal
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+//trebuie sa folositi fisierul masini.txt
+//sau va creati un alt fisier cu alte date
+
+struct StructuraMasina {
+	int id;
+	int nrUsi;
+	float pret;
+	char* model;
+	char* numeSofer;
+	unsigned char serie;
+};
+typedef struct StructuraMasina Masina;
+
+typedef struct Nod Nod;
+struct Nod
+{
+	Masina info;
+	Nod* next;
+};
+
+Masina citireMasinaDinFisier(FILE* file) {
+	char buffer[100];
+	char sep[3] = ",\n";
+	fgets(buffer, 100, file);
+	char* aux;
+	Masina m1;
+	aux = strtok(buffer, sep);
+	m1.id = atoi(aux);
+	m1.nrUsi = atoi(strtok(NULL, sep));
+	m1.pret = atof(strtok(NULL, sep));
+	aux = strtok(NULL, sep);
+	m1.model = malloc(strlen(aux) + 1);
+	strcpy_s(m1.model, strlen(aux) + 1, aux);
+
+	aux = strtok(NULL, sep);
+	m1.numeSofer = malloc(strlen(aux) + 1);
+	strcpy_s(m1.numeSofer, strlen(aux) + 1, aux);
+
+	m1.serie = *strtok(NULL, sep);
+	return m1;
+}
+
+void afisareMasina(Masina masina) {
+	printf("Id: %d\n", masina.id);
+	printf("Nr. usi : %d\n", masina.nrUsi);
+	printf("Pret: %.2f\n", masina.pret);
+	printf("Model: %s\n", masina.model);
+	printf("Nume sofer: %s\n", masina.numeSofer);
+	printf("Serie: %c\n\n", masina.serie);
+}
+
+void adaugaMasinaInLista(Nod** cap, Masina masinaNoua)
+{
+	Nod* temp = malloc(sizeof(Nod));//alocam memorie pentru un nod nou
+	temp->info = masinaNoua;//completam campul info cu masina primita ca parametru
+	temp->next = NULL;
+	if ((*cap) != NULL)//daca lista nu e vida
+	{
+		Nod* p = *cap;
+		while (p->next != NULL)
+		{
+			p = p->next;
+		}
+		p->next = temp;//legam ultimul nod de nodul nou creat
+	}
+	else
+	{
+		*cap = temp;//daca lista e vida, nodul nou devine primul nod din lista
+		return;
+	}
+}
+
+void afisareListaMasini(Nod* cap)
+{
+	while (cap)
+	{
+		afisareMasina(cap->info);
+		cap = cap->next;
+	}
+}
+void adaugaLaInceputInLista(Masina masinaNoua)
+{
+}
+
+Nod* citireListaMasiniDinFisier(const char* numeFisier)
+{
+
+	FILE* file = fopen(numeFisier, "r");
+	Nod* lista = NULL;
+	while (!feof(file)){
+		adaugaMasinaInLista(&lista, citireMasinaDinFisier(file));//sau masina
+	}
+	fclose(file);
+	return lista;
+}
+
+void dezalocareListaMasini(Nod** aux)
+{
+	Nod* head = *aux;
+	Nod* next = NULL;
+	while (head != NULL)
+	{
+		next = head->next;
+		free(head->info.model);
+		free(head->info.numeSofer);
+		free(head);
+		head = next;
+	}
+	*aux = NULL;//lista devine vida
+}
+
+float calculeazaPretMediu(Nod* lista) {
+	float suma = 0;
+	int nrMasini = 0;
+	while (lista != NULL)
+	{
+		suma += lista->info.pret;
+		nrMasini++;
+		lista = lista->next;
+	}
+	if (nrMasini != 0) return suma / nrMasini;
+	else
+		return 0;
+}
+
+void stergeMasiniDinSeria(Nod** lista, char serieCautata) {
+	Nod* curent = *lista;
+	Nod* anterior = NULL;
+
+	while (curent != NULL) {
+		if (curent->info.serie == serieCautata) {
+			Nod* deSters = curent;
+			curent = curent->next;
+			if (anterior == NULL)
+				*lista = curent;
+			else
+				anterior->next = curent;
+
+			free(deSters->info.model);
+			free(deSters->info.numeSofer);
+			free(deSters);
+		}
+		else {
+			anterior = curent;
+			curent = curent->next;
+		}
+	}
+}
+
+float calculeazaPretulMasinilorUnuiSofer(Nod* lista, const char* numeSofer) {
+	float suma = 0;
+	while (lista) {
+		if (strcmp(lista->info.numeSofer, numeSofer) == 0) {
+			suma += lista->info.pret;
+			lista = lista->next;
+		}
+		else {
+			lista = lista->next;
+		}
+	}
+	return 0;
+}
+
+int main()
+{
+	Nod* lista = citireListaMasiniDinFisier("masini.txt");
+	afisareListaMasini(lista);
+	/*dezalocareListaMasini(&lista);
+	printf("Dupa dezalocare:\n");
+	afisareListaMasini(lista);*/
+	float pretMediu = calculeazaPretMediu(lista);
+	printf("Pretul mediu al masinilor din lista este: %.2f\n", pretMediu);
+	return 0;
+}
