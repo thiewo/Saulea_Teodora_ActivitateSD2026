@@ -3,7 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-
+//trebuie sa folositi fisierul masini.txt
+//sau va creati un alt fisier cu alte date
 
 struct StructuraMasina {
 	int id;
@@ -123,7 +124,8 @@ int calculeazaHash(int id, int dimensiune) {
 }
 
 void inserareMasinaInTabela(HashTable hash, Masina masina) {
-
+	//este folosit mecanismul CHAINING
+	//este determinata pozitia si se realizeaza inserarea pe pozitia respectiva
 	int hashCode = calculeazaHash(masina.id, hash.dim);
 	if (!hash.vector[hashCode]) {
 		adaugaMasinaInLista(&hash.vector[hashCode], masina);
@@ -134,8 +136,6 @@ void inserareMasinaInTabela(HashTable hash, Masina masina) {
 }
 
 HashTable citireMasiniDinFisier(const char* numeFisier) {
-
-
 	FILE* f = fopen(numeFisier, "r");
 	HashTable hash = initializareHashTable(3);
 	if (f) {
@@ -157,17 +157,21 @@ void afisareTabelaDeMasini(HashTable ht) {
 }
 
 void dezalocareTabelaDeMasini(HashTable* ht) {
-
+	//sunt dezalocate toate masinile din tabela de dispersie
 }
 
 float* calculeazaPreturiMediiPerClustere(HashTable ht, int* nrClustere) {
-
+	//calculeaza pretul mediu al masinilor din fiecare cluster.
+	//trebuie sa returnam un vector cu valorile medii per cluster.
+	//lungimea vectorului este data de numarul de clustere care contin masini
 	return NULL;
 }
 
+
 Masina getMasinaDupaId(HashTable ht, int id) {
 	Masina m;
-
+	//cauta masina dupa valoarea atributului cheie folosit in calcularea hash-ului
+	//trebuie sa modificam numele functiei 
 	int hashCode = calculeazaHash(id, ht.dim);
 	Nod* cautare = ht.vector[hashCode];
 	while (cautare) {
