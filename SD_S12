@@ -52,13 +52,14 @@ void afisareMasina(Masina masina) {
 //dorim stocarea unui graf intr-o lista de liste
 //astfel avem nod ListaPrincipala si NodListaSecundara
 typedef struct NodPrincipal NodPrincipal;
+typedef struct NodSecundar NodSecundar;
 struct NodPrincipal {
 	Masina info;
 	NodPrincipal* next;
-	NodPrincipal* vecini;
+	NodSecundar* vecini;
 };
 
-typedef struct NodSecundar NodSecundar;
+
 struct NodSecundar {
 	NodSecundar* next;
 	NodPrincipal* info;
@@ -171,7 +172,7 @@ int main()
 {
 	NodPrincipal* graf = NULL;
 	graf= citireNoduriMasiniDinFisier("masini.txt");
-	citireMuchiiDinFisier(graf, "muchii.txt");
+	citireMuchiiDinFisier( "muchii.txt", graf);
 
 	return 0;
 }
